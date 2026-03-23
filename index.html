@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DAP Mission Control - 375 Activities</title>
+    <style>
+        :root { 
+            --space-blue: #0b1a31; 
+            --rocket-orange: #ff6b00; 
+            --neon-blue: #00d2ff; 
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--space-blue) url('space-bg.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: white; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px;
+        }
+
+        .mission-panel {
+            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); border: 2px solid var(--neon-blue);
+            border-radius: 30px; padding: 30px; width: 95%; max-width: 1200px; text-align: center; margin-bottom: 20px;
+            box-shadow: 0 0 30px rgba(0, 210, 255, 0.2);
+        }
+
+        h1 { font-size: 2.2rem; margin: 0; text-transform: uppercase; color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); }
+        h2 { font-size: 1rem; color: #94a3b8; font-weight: 400; margin-bottom: 20px; }
+        
+        .slots-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 25px 0; }
+
+        .slot-card {
+            background: rgba(255, 255, 255, 0.95); border-radius: 20px; min-height: 200px; display: flex; flex-direction: column;
+            align-items: center; justify-content: space-between; padding: 15px; border: 4px solid #1e40af; color: #0f172a; position: relative;
+        }
+
+        .launching { animation: rocketShake 0.1s infinite alternate; border-color: var(--rocket-orange) !important; }
+        @keyframes rocketShake { from { transform: translateY(0); } to { transform: translateY(-6px); } }
+
+        .category-header { font-size: 0.9rem; font-weight: 900; color: #1e40af; text-transform: uppercase; border-bottom: 1px solid #cbd5e1; width: 90%; padding-bottom: 5px; }
+        .activity-display { font-size: 1.3rem; font-weight: 800; line-height: 1.1; margin: 10px 0; min-height: 2.2em; display: flex; align-items: center; justify-content: center; text-align: center;}
+        .activity-desc { font-size: 0.75rem; font-weight: 400; color: #475569; line-height: 1.3; flex-grow: 1; }
+
+        /* RE-ROLL BUTTON STYLE */
+        .reroll-btn {
+            background: #cbd5e1; color: #1e40af; border: none; border-radius: 12px; padding: 5px 15px;
+            font-size: 0.65rem; font-weight: 800; cursor: pointer; margin-top: 10px; text-transform: uppercase;
+            transition: all 0.2s; visibility: hidden; /* Only shows after first launch */
+        }
+        .reroll-btn:hover { background: var(--neon-blue); color: white; }
+
+        .break-tag { position: absolute; top: 10px; right: 10px; background: #16a34a; color: white; font-size: 0.5rem; padding: 2px 4px; border-radius: 4px; font-weight: 700; }
+
+        #launchBtn {
+            background: linear-gradient(135deg, var(--rocket-orange), #ea580c); color: white; border: none; padding: 18px 60px;
+            font-size: 1.6rem; font-weight: 900; border-radius: 50px; cursor: pointer; box-shadow: 0 6px 0 #9a3412; text-transform: uppercase;
+        }
+
+        .mission-log { width: 95%; max-width: 1200px; background: rgba(0, 0, 0, 0.8); border-radius: 20px; padding: 20px; border: 1px solid #334155; max-height: 250px; overflow-y: auto; }
+        .log-entry { font-family: monospace; font-size: 0.8rem; padding: 8px; border-bottom: 1px solid #1e293b; color: #94a3b8; }
+    </style>
+</head>
+<body>
+
+    <div class="mission-panel">
+        <h1>🚀 Parent Mission Control 🚀</h1>
+        <h3>Developmentally Appropriate, Screen-free, "Missions" Ideas for Toddlers</h3>
+	<h2>Initiate Launch to Accept or Modify Missions</h2>
+        <div class="slots-container">
+            <div class="slot-card" id="physical">
+                <div class="category-header">Physical</div>
+                <div class="activity-display">---</div>
+                <div class="activity-desc">Awaiting command.</div>
+                <button class="reroll-btn" onclick="reroll('physical')">🔄 Change Mission</button>
+            </div>
+            <div class="slot-card" id="cognitive">
+                <div class="category-header">Cognitive</div>
+                <div class="activity-display">---</div>
+                <div class="activity-desc">Awaiting command.</div>
+                <button class="reroll-btn" onclick="reroll('cognitive')">🔄 Change Mission</button>
+            </div>
+            <div class="slot-card" id="language">
+                <div class="category-header">Language</div>
+                <div class="activity-display">---</div>
+                <div class="activity-desc">Awaiting command.</div>
+                <button class="reroll-btn" onclick="reroll('language')">🔄 Change Mission</button>
+            </div>
+            <div class="slot-card" id="social">
+                <div class="category-header">Social-Emo</div>
+                <div class="activity-display">---</div>
+                <div class="activity-desc">Awaiting command.</div>
+                <button class="reroll-btn" onclick="reroll('social')">🔄 Change Mission</button>
+            </div>
+            <div class="slot-card" id="creative">
+                <div class="category-header">Creative</div>
+                <div class="activity-display">---</div>
+                <div class="activity-desc">Awaiting command.</div>
+                <button class="reroll-btn" onclick="reroll('creative')">🔄 Change Mission</button>
+            </div>
+        </div>
+        <button id="launchBtn" onclick="initiateLaunch()">Initiate Launch</button>
+    </div>
+
+    <div class="mission-log" id="logContent"></div>
+
+    <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        // [Your full DB stays here - I've kept it as provided]
+        const db = {
+            physical: [
+                {n: "Pillow Mountain", d: "Stack pillows for climbing to build core strength and balance.", i: true},
+                {n: "Box Tunnel", d: "Create a cardboard crawl-space to improve spatial awareness.", i: true},
+                {n: "Sponge Run", d: "Carry wet sponges to a bucket to build gross motor control.", i: false},
+                {n: "Animal Yoga", d: "Mimic animal poses like 'Downward Dog' to improve flexibility.", i: false},
+                {n: "Tape Roadway", d: "Follow a tape line on the floor to practice balance and gait.", i: true},
+                {n: "Balloon Tapping", d: "Keep a balloon afloat with a pool noodle for reach.", i: true},
+                {n: "Laundry Basket Push", d: "Push a heavy basket to provide calming proprioceptive input.", i: false},
+                {n: "Bubble Stomp", d: "Chase and pop bubbles to build agility and reaction speed.", i: false},
+                {n: "Crab Walk", d: "Walk on hands and feet facing up to build upper body strength.", i: false},
+                {n: "Flashlight Tag", d: "Chase light beams on the floor to build visual-motor speed.", i: false},
+                {n: "Log Rolling", d: "Roll the body across the floor to build core rotation.", i: false},
+                {n: "Hoop Jumping", d: "Jump in and out of hoops to build spatial foot accuracy.", i: false},
+                {n: "Marching", d: "Lift knees high while walking to build hip flexor strength.", i: false},
+                {n: "Box Skating", d: "Slide on carpet with boxes on feet to build leg balance.", i: false},
+                {n: "Tightrope Walk", d: "Walk along a string to practice linear foot placement.", i: false},
+                {n: "Dinosaur Stomp", d: "Walk with heavy steps to build leg impact and force.", i: false},
+                {n: "Backward Walking", d: "Take slow steps backward to challenge coordination.", i: false},
+                {n: "One Foot Stand", d: "Balance on one leg to strengthen ankle and core stability.", i: false},
+                {n: "Jumping Jacks", d: "Practice the 'X' and 'I' shapes to build coordination.", i: false},
+                {n: "Frog Leaps", d: "Squat and jump forward to build explosive leg power.", i: false},
+                {n: "Tiptoe Reach", d: "Reach high for bubbles to stretch and build ankle strength.", i: false},
+                {n: "Butterfly Flap", d: "Move arms like wings to build shoulder and chest muscles.", i: false},
+                {n: "Sprinkler Run", d: "Navigate through water streams to improve sensory regulation.", i: true},
+                {n: "Tug-of-War", d: "Pull a soft rope to engage the entire body in resistance.", i: false},
+                {n: "High-Five Jump", d: "Jump up to high-five a hand to practice vertical reach.", i: false},
+                {n: "Sheet Parachute", d: "Shake a bedsheet to build rhythmic arm and wrist force.", i: false},
+                {n: "Box Step-ups", d: "Step on and off a sturdy box to build glute strength.", i: true},
+                {n: "Spider Walk", d: "Crawl on hands and feet facing down to build core power.", i: false},
+                {n: "Ribbon Wand", d: "Twirl ribbons in circles to improve shoulder range.", i: true},
+                {n: "Log Walk", d: "Step over sticks in the yard to practice high-knee stepping.", i: true},
+                {n: "Rock Climbing", d: "Step on and off large stones to build ankle stability.", i: false},
+                {n: "Sidewalk Leap", d: "Jump across sidewalk cracks to build timing and force.", i: false},
+                {n: "Follow the Leader", d: "Mimic the movements of an adult to practice motor planning.", i: false},
+                {n: "Belly Crawl", d: "Crawl using only arms to build upper body endurance.", i: false},
+                {n: "Toy Fetch", d: "Run to get specific toys to combine movement with memory.", i: false},
+                {n: "Weighted Walk", d: "Wear a small backpack to provide calming sensory input.", i: false},
+                {n: "Under-Leg Tunnel", d: "Crawl under parent's legs to practice spatial judging.", i: false},
+                {n: "Shadow Chasing", d: "Try to step on a parent's shadow to build agility.", i: false},
+                {n: "Stop-and-Go", d: "Run then freeze on command to build inhibitory control.", i: false},
+                {n: "Frisbee Toss", d: "Flick a soft disc to build wrist snap and aim.", i: false},
+                {n: "Feather Blow", d: "Blow a feather across the floor to build breath control.", i: false},
+                {n: "Climbing Rungs", d: "Ascend a small ladder to build grip and pull strength.", i: false},
+                {n: "Tricycle Pedal", d: "Push pedals to build reciprocal leg muscle movement.", i: false},
+                {n: "Galloping", d: "Lead with one foot to practice asymmetrical rhythm.", i: false},
+                {n: "Wall Pushing", d: "Push against a wall to provide heavy work for calming.", i: false},
+                {n: "Mud Kitchen", d: "Stir mud in large pots to build arm and shoulder strength.", i: true},
+                {n: "Stick Collection", d: "Gather sticks of different sizes to build grip strength.", i: true},
+                {n: "Hula Steering", d: "Hold a hoop like a wheel to practice imaginative driving.", i: true},
+                {n: "Bottle Bowling", d: "Roll a ball at plastic bottles to learn cause and effect.", i: true},
+                {n: "Sack Race", d: "Hop inside a pillowcase to build lower body power.", i: false},
+                {n: "Toe Walking", d: "Walk on tip-toes to strengthen calves and arch muscles.", i: false},
+                {n: "Rolling Hills", d: "Roll down a grassy slope to provide vestibular stimulation.", i: false},
+                {n: "Object Weaving", d: "Run around cones or toys to practice directional change.", i: true},
+                {n: "Sandbox Digging", d: "Dig and sift sand to refine arm and wrist movements.", i: true},
+                {n: "Puddle Jumping", d: "Leap into water to build confidence and impact force.", i: false},
+                {n: "Ball Kicking", d: "Kick a large ball toward a target to build leg strength.", i: true},
+                {n: "Tricycle Wash", d: "Scrub wheels with a sponge to combine play with movement.", i: true},
+                {n: "Leaf Crunch", d: "Walk through dry leaves to explore sensory textures.", i: true},
+                {n: "Worm Digging", d: "Search for earthworms to practice squatting and fine motor.", i: true},
+                {n: "Stepping Stones", d: "Jump between marked spots to practice precision landings.", i: true},
+                {n: "Trash Basket", d: "Toss crumpled paper into a bin to refine motor planning.", i: true},
+                {n: "Stair Climbing", d: "Ascend stairs with help to build leg and core power.", i: false},
+                {n: "Tunnel Crawl", d: "Crawl through a play tunnel to build bilateral coordination.", i: true},
+                {n: "Blanket Pull", d: "Pull a sibling or toy on a blanket for heavy work.", i: false},
+                {n: "Balance Beam", d: "Walk on a low board to build focus and steady footing.", i: false},
+                {n: "Kite Flying", d: "Run while holding a string to learn wind resistance.", i: false},
+                {n: "Sofa Slide", d: "Use sofa cushions as a ramp to explore gravity.", i: true},
+                {n: "Beanbag Toss", d: "Aim for buckets to refine throwing accuracy.", i: true},
+                {n: "Chalk Course", d: "Jump through chalk circles to practice coordinated leaping.", i: true},
+                {n: "Tree Balance", d: "Walk along a fallen log to challenge vestibular balance.", i: false},
+                {n: "Wheelbarrow Walk", d: "Walk on hands while legs are held to build arm strength.", i: false},
+                {n: "Box Pushing", d: "Push a box filled with books across carpet for resistance.", i: true},
+                {n: "Nature Trek", d: "Walk on uneven terrain to build ankle stability.", i: false},
+                {n: "Sky Reaching", d: "Stretch high to reach tree leaves or low branches.", i: false},
+                {n: "Sponge Toss", d: "Throw wet sponges at a target for grip and aim.", i: true}
+            ],
+            cognitive: [
+                {n: "Button Sorting", d: "Group buttons by color to build early categorization skills.", i: true},
+                {n: "Magnet Science", d: "Test what sticks to a magnet to learn about metal properties.", i: false},
+                {n: "Nut and Bolt", d: "Screw hardware together to practice rotational mechanical logic.", i: true},
+                {n: "Coin Drop", d: "Drop coins into a narrow slot to refine fine motor and focus.", i: true},
+                {n: "Key and Lock", d: "Find the right key for a lock to practice mechanical logic.", i: true},
+                {n: "Texture Board", d: "Touch fabrics like silk and wool to build sensory processing.", i: true},
+                {n: "Spoon Sorting", d: "Group different sized spoons to practice comparison math.", i: true},
+                {n: "Ice Melt", d: "Watch ice cubes melt in the sun to learn about states of matter.", i: true},
+                {n: "3-Piece Puzzle", d: "Fit simple pieces together to build visual-spatial skills.", i: true},
+                {n: "Pattern Build", d: "Create simple ABAB patterns with blocks to learn logic.", i: false},
+                {n: "Shadow Match", d: "Match objects to their drawn shadows to build visual acuity.", i: false},
+                {n: "Counting Jumps", d: "Count out loud while jumping to connect math to movement.", i: false},
+                {n: "Weight Sort", d: "Compare heavy and light items to learn about mass.", i: false},
+                {n: "Magnifying Glass", d: "Look at leaves up close to build observation skills.", i: true},
+                {n: "Water Pouring", d: "Transfer water between cups to learn about volume.", i: true},
+                {n: "Mirror Symmetry", d: "Look at half-drawings in a mirror to learn about balance.", i: false},
+                {n: "Seed Sorting", d: "Separate different dry seeds to build tactile discrimination.", i: true},
+                {n: "What's Missing?", d: "Identify which toy was removed from a group for memory.", i: false},
+                {n: "Color Mixing", d: "Mix blue and yellow water to see green for cause/effect.", i: false},
+                {n: "Animal Habitats", d: "Place toy animals in 'water' or 'land' to learn science.", i: false},
+                {n: "Same and Different", d: "Find two identical socks to build visual discrimination.", i: false},
+                {n: "Sorting Laundry", d: "Match shirts or socks to learn functional sorting.", i: false},
+                {n: "Bird Watching", d: "Count birds at a window to build focus and patience.", i: true},
+                {n: "Sound Match", d: "Find which shaker jars sound the same for auditory logic.", i: false},
+                {n: "Simple Maze", d: "Draw a path for a toy car to build spatial planning.", i: false},
+                {n: "Weather Dress", d: "Pick clothes for 'cold' or 'hot' to learn daily science.", i: false},
+                {n: "Flashcard Hunt", d: "Find cards hidden in the room to build search logic.", i: false},
+                {n: "Tongs Transfer", d: "Move cotton balls with tongs to build pincer logic.", i: true},
+                {n: "Floating Boats", d: "Build a boat of foil to see how many toys it carries.", i: false},
+                {n: "Wind Chimes", d: "Listen and count the clangs to build auditory focus.", i: true},
+                {n: "Pet Toy Sort", d: "Sort toys for a dog or cat to learn responsibility.", i: true},
+                {n: "Sun Catchers", d: "Look at colored light on the wall to learn about optics.", i: true},
+                {n: "Clock Tick Hunt", d: "Find where a ticking clock is hidden to build hearing.", i: false},
+                {n: "Leaf Vein Look", d: "Look at the lines in leaves to learn about plant biology.", i: true},
+                {n: "Scent Jars", d: "Guess what is inside a jar by smelling it for logic.", i: false},
+                {n: "Nesting Cups", d: "Stack cups by size to build spatial relationships.", i: true},
+                {n: "Toy Wash", d: "Clean toys in a basin to learn hygiene and steps.", i: true},
+                {n: "Sand Sifting", d: "Use a sieve to find hidden coins to build persistence.", i: true},
+                {n: "Block Shadows", d: "Match a block tower to its shadow to learn perspective.", i: false},
+                {n: "Tape Peeling", d: "Peel tape off a tray to build focus and hand strength.", i: true},
+                {n: "Color Paddles", d: "Look through colored film to see how the world changes.", i: true},
+                {n: "Big/Small Sort", d: "Group toys by relative size to learn comparisons.", i: false},
+                {n: "Measuring Tape", d: "Pull a tape to see how long a toy is for early math.", i: false},
+                {n: "Cardboard Ramp", d: "Change the height of a ramp to see cars go faster.", i: true},
+                {n: "Magnet Board", d: "Move magnets to build creative and spatial patterns.", i: true},
+                {n: "Straw Threading", d: "Put straws on a vertical stick to build depth logic.", i: true},
+                {n: "Silhouette Guess", d: "Identify objects by just their outline for memory.", i: false},
+                {n: "Sound Tubes", d: "Listen to whispers through a tube to learn sound travel.", i: true},
+                {n: "Button Snake", d: "Thread felt buttons onto a ribbon to build sequence.", i: true},
+                {n: "Sticker Numbers", d: "Put one sticker next to each number to learn quantity.", i: true},
+                {n: "Spoon Match", d: "Group big and little spoons to practice math logic.", i: true},
+                {n: "Lid Matching", d: "Find the correct lids for containers to practice problem-solving.", i: true},
+                {n: "Egg Carton Count", d: "Put one pom-pom in each egg hole to learn 1:1 math.", i: false},
+                {n: "Mirror Drawing", d: "Draw on a mirror with soap to explore reflection.", i: false},
+                {n: "Category Pick", d: "Find all the 'round' items in a room for math logic.", i: false},
+                {n: "Flashlight Glow", d: "Shine light through hands to see bones and light.", i: false},
+                {n: "Water Siphon", d: "Move water using a tube to learn about gravity.", i: false},
+                {n: "Balance Scale", d: "Use a hanger to see which of two toys is heavier.", i: false},
+                {n: "Body Part Match", d: "Point to nose, toes, and ears to build body schema.", i: false},
+                {n: "Plant Watering", d: "Learn which plants need water to build biology logic.", i: true},
+                {n: "Clock Hand Turn", d: "Turn the hands of a toy clock to learn about time.", i: false},
+                {n: "Scent Vocabulary", d: "Identify essential oils while blindfolded to build logic.", i: false},
+                {n: "Sorting Spices", d: "Match dry, non-edible kitchen items to build association.", i: false},
+                {n: "Alphabet Bath", d: "Fish for foam letters in water to build pre-literacy.", i: true},
+                {n: "Button Poking", d: "Push buttons into play-dough to build finger logic.", i: true},
+                {n: "Matching Photos", d: "Match a photo of a toy to the real object for logic.", i: false},
+                {n: "Ice Tray Sort", d: "Use tweezers to put beads in ice holes for focus.", i: true},
+                {n: "Mystery Sound", d: "Guess what made a noise without looking for memory.", i: false},
+                {n: "Light Box Build", d: "Stack translucent blocks on a light source for optics.", i: true},
+                {n: "Key Sort", d: "Group old keys by shape and color for visual sorting.", i: true},
+                {n: "Leaf Sorting", d: "Group dry leaves by shape (pointed vs round) for science.", i: true},
+                {n: "Shadow Tracing", d: "Trace the shadow of a toy on paper to see perspective.", i: true},
+                {n: "Mirror Pattern", d: "Build half a block tower against a mirror to see symmetry.", i: false},
+                {n: "Toy Camouflage", d: "Hide green toys on a green rug to learn about blending.", i: false},
+                {n: "Gravity Test", d: "Drop a feather and a rock to see which falls faster.", i: false}
+            ],
+            language: [
+                {n: "Dialogic Reading", d: "Ask 'what' and 'why' during stories to build conversation.", i: false},
+                {n: "Sand Tray Letters", d: "Trace shapes in craft sand to build tactile letter memory.", i: true},
+                {n: "Nursery Rhymes", d: "Sing rhymes together to build phonemic awareness.", i: false},
+                {n: "Action Verbs", d: "Shout 'jump' or 'sit' and do the action for vocabulary.", i: false},
+                {n: "Puppet Story", d: "Use a puppet to tell a story and encourage mimicry.", i: false},
+                {n: "Audio Books", d: "Listen to a recorded story to build auditory focus.", i: true},
+                {n: "Sticker Journal", d: "Place stickers and tell a story about them for grammar.", i: true},
+                {n: "Name Recognition", d: "Find their name written on various items in the room.", i: false},
+                {n: "Animal Sounds", d: "Match animal toys to the sounds they make for phonics.", i: false},
+                {n: "Flannel Board", d: "Move felt pieces to tell a visual story for sequence.", i: true},
+                {n: "I Spy Colors", d: "Find objects of a specific color to build adjectives.", i: false},
+                {n: "Voice Record", d: "Record and play back their voice to build self-speech.", i: true},
+                {n: "Story Stones", d: "Pick a stone with a picture and describe it for logic.", i: true},
+                {n: "Toy Telephone", d: "Practice turn-taking in conversation with a toy phone.", i: true},
+                {n: "Rhyme Match", d: "Find words that sound the same to build phonics skills.", i: false},
+                {n: "Family Photos", d: "Name people in old photos to build social vocabulary.", i: true},
+                {n: "Opposite Play", d: "Play with 'big' and 'small' toys to build descriptors.", i: false},
+                {n: "Point and Name", d: "Point to household items and say their names clearly.", i: true},
+                {n: "Tell Me a Story", d: "Ask the child to explain what they did today for syntax.", i: false},
+                {n: "Chalk Letters", d: "Jump to specific letters drawn on the sidewalk.", i: false},
+                {n: "Scent Words", d: "Describe smells like 'sharp' or 'soft' for adjectives.", i: false},
+                {n: "Mirror Talk", d: "Make faces and describe them to build emotion words.", i: true},
+                {n: "Onomatopoeia", d: "Make 'boom' and 'zoom' sounds during play for phonics.", i: false},
+                {n: "Labeling House", d: "Put sticky notes on items like 'Door' or 'Chair'.", i: false},
+                {n: "Echo Game", d: "Say a short sentence and have the child repeat it back.", i: false},
+                {n: "Finger Plays", d: "Do the 'Itsy Bitsy Spider' to connect words and hands.", i: false},
+                {n: "Tactile Letters", d: "Feel sandpaper letters to build pre-writing memory.", i: true},
+                {n: "Sound Scavenger", d: "Find items that start with the 'B' sound in a room.", i: false},
+                {n: "Hand Print Story", d: "Trace hands and write a story about what they touch.", i: false},
+                {n: "Wet Brush ABCs", d: "Paint letters with water on the ground to see them vanish.", i: true},
+                {n: "Emotion Cards", d: "Look at faces and name the feelings to build empathy.", i: false},
+                {n: "Nature Vocab", d: "Go for a walk and name specific trees or flowers.", i: false},
+                {n: "Word Puzzles", d: "Connect two pieces to form a picture and a word.", i: true},
+                {n: "Secret Whisper", d: "Whisper a 'secret' word to build auditory listening.", i: false},
+                {n: "Draw and Label", d: "Have the child draw and you write the labels they say.", i: false},
+                {n: "Letter vs Number", d: "Sort magnetic letters and numbers to learn symbols.", i: false},
+                {n: "Read to Teddy", d: "Have the child 'read' a picture book to a stuffed toy.", i: true},
+                {n: "Follow Directions", d: "Give a 2-step command to build auditory processing.", i: false},
+                {n: "Rhyming Pairs", d: "Find two toys that rhyme, like 'Cat' and 'Hat'.", i: false},
+                {n: "Clapping Beats", d: "Clap the syllables of names to build word rhythm.", i: false},
+                {n: "Is it Real?", d: "Compare a toy dog to a real dog to build concepts.", i: false},
+                {n: "Action Dice", d: "Roll a die with verbs like 'Run' or 'Yell' on it.", i: false},
+                {n: "Drawing Tempo", d: "Draw fast lines for fast music and slow for slow.", i: true},
+                {n: "Routine Cards", d: "Look at cards for 'Bath' or 'Bed' to learn sequence.", i: false},
+                {n: "Letter Fishing", d: "Fish for foam letters in a bowl to build recognition.", i: true},
+                {n: "Soft/Hard Sort", d: "Describe items as soft or hard to build descriptors.", i: true},
+                {n: "Mom/Baby Animal", d: "Name the baby animal for every adult animal toy.", i: false},
+                {n: "Finger Name", d: "Trace their name in a tray of sand or glitter.", i: false},
+                {n: "Sound Jars", d: "Guess the object inside a jar by its shake sound.", i: false},
+                {n: "Mystery Box", d: "Reach into a box and name the item by feel alone.", i: false},
+                {n: "Simon Says", d: "Follow commands to build listening and vocabulary.", i: false},
+                {n: "Category Find", d: "Find everything in the room that is 'blue' for words.", i: false},
+                {n: "Story Basket", d: "Pick items from a basket to tell an impromptu story.", i: true},
+                {n: "Where is it?", d: "Play a game where you describe a location for a toy.", i: false},
+                {n: "Rhyme Completion", d: "Pause at the end of a rhyme for the child to finish.", i: false},
+                {n: "Environmental ABCs", d: "Find letters on boxes or street signs.", i: false},
+                {n: "Verb Mimic", d: "Act out words like 'wiggle' or 'sneeze' for meaning.", i: false},
+                {n: "First Sound Jump", d: "Jump when you hear a word that starts with 'S'.", i: false},
+                {n: "Magazine Search", d: "Find pictures of specific items in a catalog.", i: false},
+                {n: "Greeting Rituals", d: "Practice 'Hello' and 'Goodbye' with various toys.", i: false},
+                {n: "Identity Box", d: "Put items that represent the child in a box for talk.", i: true},
+                {n: "Scribble Captions", d: "Ask the child what they drew and write it down.", i: false},
+                {n: "Animal Habitats", d: "Describe where animals live using 'Cold' or 'Hot'.", i: false},
+                {n: "Daily Recount", d: "Talk about three things that happened this morning.", i: false},
+                {n: "Clothing Names", d: "Name each piece of clothing as you put it on.", i: false},
+                {n: "Opposite Concept", d: "Play with 'open' and 'closed' doors or boxes.", i: false},
+                {n: "Mirror Narrative", d: "Describe what the child is doing while they watch.", i: true},
+                {n: "Color Word Match", d: "Match a color crayon to a colored object for words.", i: false},
+                {n: "Telephone Play", d: "Have a conversation with a toy to build social speech.", i: true},
+                {n: "Hand Puppet Talk", d: "Have the puppet ask the child questions to build talk.", i: false},
+                {n: "Book Basket", d: "Keep a basket of themed books for independent look.", i: true},
+                {n: "Action Mimicry", d: "Tell the child a story and have them act out verbs.", i: false},
+                {n: "Picture Sorting", d: "Group pictures of 'animals' and 'vehicles' for logic.", i: true},
+                {n: "Sound Tape", d: "Record household sounds and have the child name them.", i: true},
+                {n: "Color Command", d: "Give commands like 'Touch something red' to build syntax.", i: false}
+            ],
+            social: [
+                {n: "Mirror Emotions", d: "Make different faces to learn to identify feelings.", i: true},
+                {n: "Baby Doll Care", d: "Practice gentle touch and empathy with a doll.", i: true},
+                {n: "Gentle Touch", d: "Practice stroking a stuffed toy softly for regulation.", i: false},
+                {n: "Helping Chores", d: "Do a simple task together to build social cooperation.", i: false},
+                {n: "Waiting Timer", d: "Use a sand timer to practice the social skill of waiting.", i: false},
+                {n: "Calming Corner", d: "Spend time in a quiet space to build self-regulation.", i: true},
+                {n: "Doctor Roleplay", d: "Take turns being the doctor to build empathy for others.", i: true},
+                {n: "Self-Dress", d: "Practice putting on a hat or shoes to build autonomy.", i: true},
+                {n: "Emotion Masks", d: "Hold up happy or sad masks to build recognition.", i: false},
+                {n: "Sharing Blocks", d: "Divide blocks between two people to build social sharing.", i: false},
+                {n: "Helping Mail", d: "Carry a letter to the mailbox to build family helpfulness.", i: false},
+                {n: "Space Hoop", d: "Sit in a hoop to learn the concept of personal space.", i: false},
+                {n: "Family Tree", d: "Look at photos of relatives to build a sense of belonging.", i: false},
+                {n: "Self-Portrait", d: "Draw themselves in a mirror to build self-identity.", i: true},
+                {n: "Stuffed Pet Care", d: "Pretend to brush a toy pet to build responsibility.", i: true},
+                {n: "Turn-Taking Ball", d: "Roll a ball back and forth to learn social reciprocity.", i: false},
+                {n: "Emotion Freeze", d: "Dance and then freeze with a specific facial expression.", i: false},
+                {n: "Greeting Ritual", d: "Practice 'high-fives' and 'waves' to build social habits.", i: false},
+                {n: "Identity Box", d: "Look at their own baby items to build self-history.", i: true},
+                {n: "Mist the Plants", d: "Care for a living thing to build social nurturing.", i: true},
+                {n: "Doll Bathing", d: "Wash a plastic doll to build body awareness and care.", i: true},
+                {n: "Success Journal", d: "Recall one good thing done today to build pride.", i: false},
+                {n: "Feelings Book", d: "Read a story about a character with 'big feelings'.", i: false},
+                {n: "Choice Board", d: "Pick between two shirts to build independent choice.", i: false},
+                {n: "Thank You", d: "Practice saying 'thank you' with toy characters.", i: false},
+                {n: "Mirror Mimic", d: "Mimic a parent's facial expression to learn social cues.", i: false},
+                {n: "Deep Breathing", d: "Pretend to 'smell a flower' to learn calming skills.", i: false},
+                {n: "Emotion Sorting", d: "Sort faces into 'happy' and 'sad' bins for social logic.", i: false},
+                {n: "Set the Table", d: "Place napkins for each family member for cooperation.", i: false},
+                {n: "Parallel Play", d: "Build blocks alongside the child to build social comfort.", i: true},
+                {n: "Self-Wash", d: "Practice washing their own arms during a bath for agency.", i: false},
+                {n: "Toy Picnic", d: "Set up a shared scene for stuffed animals to build play social.", i: true},
+                {n: "Waiting Line", d: "Practice standing in a line with toys for social patience.", i: false},
+                {n: "Shoe Matching", d: "Put away their own shoes to build personal responsibility.", i: false},
+                {n: "Pride Parade", d: "March and celebrate completing a task to build esteem.", i: false},
+                {n: "Comfort Kit", d: "Build a box of items that help the child feel safe.", i: true},
+                {n: "How is Bear?", d: "Ask the child how a toy might be feeling today.", i: false},
+                {n: "Gentle Petting", d: "Learn to touch a toy pet with a flat hand.", i: false},
+                {n: "Taking Message", d: "Pretend to write a note for a parent to build helpfulness.", i: true},
+                {n: "Routine Chart", d: "Check off tasks to build a sense of daily security.", i: false},
+                {n: "Emotion Wheel", d: "Spin a wheel and act out the emotion it lands on.", i: false},
+                {n: "Hand-Wash Song", d: "Sing a social hygiene song together for habits.", i: false},
+                {n: "Doll Bedtime", d: "Put a doll to sleep to learn and model bed routines.", i: true},
+                {n: "Compliment Circle", d: "Say one nice thing about every family member.", i: false},
+                {n: "Where I Live", d: "Discuss their house and street to build community.", i: false},
+                {n: "Mine vs Yours", d: "Identify which items belong to whom to learn boundaries.", i: false},
+                {n: "Cooperation Tower", d: "Take turns adding one block to a shared tower.", i: false},
+                {n: "Sensory Squish", d: "Squeeze a stress ball to learn physical calming.", i: true},
+                {n: "Baby Photos", d: "Look at photos of when they were a baby for identity.", i: false},
+                {n: "Hot vs Cold", d: "Learn which items are safe to touch for safety social.", i: false},
+                {n: "May I? Game", d: "Practice asking permission before taking a toy.", i: false},
+                {n: "Group Cleanup", d: "Everyone cleans for 1 minute to build shared effort.", i: false},
+                {n: "Feelings Color", d: "Associate colors with moods (Blue for sad, etc.).", i: false},
+                {n: "Grocery Shop", d: "Roleplay buying items to learn social transactions.", i: true},
+                {n: "Body Scanning", d: "Focus on how feet and tummy feel for awareness.", i: false},
+                {n: "I'm Sorry", d: "Practice apologizing with toy characters for empathy.", i: false},
+                {n: "Brave Talk", d: "Practice saying 'I am brave' to build self-confidence.", i: false},
+                {n: "Puppet Conflict", d: "Use puppets to show how to resolve a toy argument.", i: false},
+                {n: "Identity Mirror", d: "Find five things they like about their own face.", i: false},
+                {n: "Bubble Hugs", d: "Practice 'hugging' themselves to build self-soothing.", i: false},
+                {n: "What Comes Next?", d: "Predict the next social step in a common routine.", i: false},
+                {n: "Self-Feeding", d: "Focus on using a spoon independently to build agency.", i: true},
+                {n: "Caring for Plant", d: "Talk to a plant while misting to build empathy.", i: true},
+                {n: "Wait for Kettle", d: "Practice waiting for a sound before a transition.", i: false},
+                {n: "Laundry Socks", d: "Find and match pairs to build helpfulness social.", i: true},
+                {n: "Show a Toy", d: "Practice presenting a toy to a parent for social pride.", i: false},
+                {n: "No Thank You", d: "Practice a polite refusal to build personal boundaries.", i: false},
+                {n: "Blanket Snuggle", d: "Spend quiet time together to build attachment.", i: true},
+                {n: "High Five Win", d: "Celebrate a small win with a social high-five.", i: false},
+                {n: "Helping Pet", d: "Brush a dog or cat with help to build care skills.", i: false},
+                {n: "Big Kid Stool", d: "Use a stool to reach the sink for independence.", i: false},
+                {n: "Emotion Hunt", d: "Find pictures of people in books who are 'smiling'.", i: false},
+                {n: "Quiet Listen", d: "Sit quietly for 30 seconds to build group focus.", i: false},
+                {n: "Goodbye Wave", d: "Practice a proper farewell ritual with various toys.", i: false},
+                {n: "Safety Signs", d: "Learn the meaning of 'Stop' and 'Go' for social safety.", i: false}
+            ],
+            creative: [
+                {n: "Play-dough Bakery", d: "Mold 'treats' to build imagination and hand strength.", i: true},
+                {n: "Water Painting", d: "Paint with water on dark paper for mess-free creativity.", i: true},
+                {n: "Sticker Art", d: "Peel and place stickers to build fine motor and design.", i: true},
+                {n: "Colander Poke", d: "Push pipe cleaners through holes for high-focus art.", i: true},
+                {n: "Beading Buttons", d: "Thread large buttons on string to build focus and patterns.", i: true},
+                {n: "Finger Paint", d: "Explore textures and colors using fingers on paper.", i: false},
+                {n: "Contact Paper", d: "Stick tissue paper to clear film for a sun-catcher.", i: true},
+                {n: "Chalk Drawing", d: "Draw large shapes on the ground to build arm motor.", i: true},
+                {n: "Paper Tearing", d: "Tear colorful paper into bits to build hand strength.", i: true},
+                {n: "Shaving Cream", d: "Spread foam on a tray to draw letters and shapes.", i: false},
+                {n: "Found Collage", d: "Glue leaves and sticks to paper for nature-based art.", i: true},
+                {n: "Sponge Painting", d: "Dab sponges in paint to explore shape and texture.", i: false},
+                {n: "Box Decorating", d: "Turn a large box into a house with markers and tape.", i: true},
+                {n: "Yarn Wrapping", d: "Wrap yarn around a stick to explore line and color.", i: false},
+                {n: "Salt Dough", d: "Mix flour and salt to make sculptures and handprints.", i: false},
+                {n: "Dot Markers", d: "Use dabbers to create patterns and fill in circles.", i: true},
+                {n: "Foil Sculptures", d: "Crumple and shape foil into various animals or stars.", i: true},
+                {n: "Ribbon Thread", d: "Thread ribbons through a wire rack to build dexterity.", i: true},
+                {n: "Sandbox Sensory", d: "Hide toys in a bin of clean sand for tactile exploration.", i: true},
+                {n: "Mud Kitchen", d: "Mix dirt and water to 'bake' mud pies and cakes.", i: true},
+                {n: "Cookie Cutters", d: "Use shapes as stamps in paint or play-dough.", i: false},
+                {n: "Scissor Snips", d: "Practice cutting paper strips to build hand control.", i: false},
+                {n: "Cotton Glue", d: "Glue cotton balls to blue paper to make fluffy clouds.", i: true},
+                {n: "Spray Paint", d: "Fill a bottle with watery paint to spray colorful art.", i: true},
+                {n: "Tweezer Sort", d: "Move buttons with large tweezers to build grip logic.", i: true},
+                {n: "Stamp Art", d: "Use rubber stamps to create repetitive patterns for focus.", i: false},
+                {n: "Clothespin Clip", d: "Clip pins to the edge of a box to build finger power.", i: true},
+                {n: "Sand Art", d: "Pour colored sand into a jar to create layered art.", i: true},
+                {n: "Bubble Paint", d: "Blow bubbles in paint and press paper on top for art.", i: false},
+                {n: "Tape Resist", d: "Paint over tape and peel it off to see the design.", i: false},
+                {n: "Pipette Art", d: "Drip colored water onto towels to see color spread.", i: false},
+                {n: "Balloon Stamps", d: "Dip balloons in paint to create large, round shapes.", i: false},
+                {n: "Plate Masks", d: "Cut holes in a paper plate to create a character mask.", i: false},
+                {n: "Rock Painting", d: "Paint smooth stones to create 'pet rocks' or decor.", i: true},
+                {n: "Nature Crowns", d: "Tape leaves to a paper strip to make a forest crown.", i: false},
+                {n: "String Painting", d: "Drag paint-soaked string across paper for swirls.", i: false},
+                {n: "Ice Cube Paint", d: "Paint with colored ice cubes as they melt on paper.", i: false},
+                {n: "Box Guitar", d: "Stretch rubber bands over a box to explore music.", i: true},
+                {n: "Tube Stamps", d: "Use toilet paper rolls as circular paint stamps.", i: true},
+                {n: "Leaf Rubbings", d: "Place a leaf under paper and rub with a crayon.", i: false},
+                {n: "Pipe Cleaners", d: "Twist fuzzy wires into rings and bracelets for art.", i: true},
+                {n: "Sticks in Dough", d: "Stand sticks in play-dough to build a 3D forest.", i: true},
+                {n: "Mirror Painting", d: "Paint on a mirror to see the reflection and colors.", i: false},
+                {n: "Felt Board", d: "Arrange felt shapes on a board to build a scene.", i: true},
+                {n: "Window Markers", d: "Draw directly on glass for a new perspective.", i: true},
+                {n: "Button Carton", d: "Poke buttons through slots in an egg carton for art.", i: true},
+                {n: "Fork Painting", d: "Use fork tines to paint 'fur' or 'grass' textures.", i: false},
+                {n: "Bubble Wrap", d: "Tape wrap to feet and walk on paper for sensory art.", i: true},
+                {n: "Cardboard Loom", d: "Weave yarn through notches in a piece of cardboard.", i: false},
+                {n: "Cornmeal Tray", d: "Draw shapes in a tray of cornmeal for tactile art.", i: true},
+                {n: "Straw & Dough", d: "Poke straws into dough to build tall structures.", i: true},
+                {n: "Handprint Trees", d: "Use an arm as the trunk and handprints as leaves.", i: false},
+                {n: "Glue and Glitter", d: "Make sparkly designs to explore stickiness and shine.", i: false},
+                {n: "Coffee Filter", d: "Color a filter and mist it with water to see colors bleed.", i: true},
+                {n: "Shell Painting", d: "Paint seashells to explore textures and ridges.", i: true},
+                {n: "Magnetic Tiles", d: "Build tall translucent structures on a light source.", i: true},
+                {n: "Pipe Cleaner Beads", d: "Thread large plastic beads onto fuzzy wires for focus.", i: true},
+                {n: "Paper Chain", d: "Glue loops of paper together to build a long chain.", i: false},
+                {n: "Egg Carton Bug", d: "Paint carton sections to look like colorful bugs.", i: true},
+                {n: "Feather Brush", d: "Use a feather as a paintbrush for light textures.", i: false},
+                {n: "Squiggle Art", d: "Draw a squiggle and have the child finish the picture.", i: false},
+                {n: "Shaker Making", d: "Put beads in a bottle and decorate it for a music toy.", i: true},
+                {n: "Pompom Whisk", d: "Stuff pompoms in a kitchen whisk for a pull-out art.", i: true},
+                {n: "Foil Art", d: "Draw with markers on foil to see the metallic shine.", i: true},
+                {n: "Sand Tray ABCs", d: "Write letters in a tray of sand for tactile design.", i: true},
+                {n: "Fabric Scraps", d: "Glue different fabric pieces to build a texture map.", i: true},
+                {n: "Leaf Stamping", d: "Dip real leaves in paint and press them onto paper.", i: false},
+                {n: "Sun Crayon Art", d: "Leave crayon bits in the sun to see them melt into art.", i: false},
+                {n: "Pinecone Art", d: "Paint the tips of pinecones to make winter 'trees'.", i: true},
+                {n: "Button Tree", d: "Glue buttons to a drawn tree to make colorful leaves.", i: true},
+                {n: "Plate Snails", d: "Draw a swirl on a paper plate to make a snail shell.", i: true},
+                {n: "Ink Fingerprints", d: "Make dots with ink and turn them into tiny bugs.", i: false},
+                {n: "Q-Tip Painting", d: "Use cotton swabs to make dot-art and fine details.", i: true},
+                {n: "Rainbow Jar", d: "Layer colored water and oil to see the liquid art.", i: true},
+                {n: "Ribbon Weave", d: "Weave ribbons through the rungs of a laundry basket.", i: false}
+            ]
+        };
+
+        function playSound(freq = 100) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + 0.8);
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.8);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.8);
+        }
+
+        // NEW RE-ROLL FUNCTION
+        function reroll(cat) {
+            playSound(300); // Higher beep for reroll
+            const options = db[cat];
+            const pick = options[Math.floor(Math.random() * options.length)];
+            const card = document.getElementById(cat);
+            
+            card.querySelector('.activity-display').innerText = pick.n;
+            card.querySelector('.activity-desc').innerText = pick.d;
+            
+            // Re-check for break tag
+            const tag = card.querySelector('.break-tag');
+            if(tag) tag.remove();
+            if(pick.i) {
+                const newTag = document.createElement('div');
+                newTag.className = 'break-tag'; newTag.innerText = '☕ BREAK';
+                card.appendChild(newTag);
+            }
+            
+            logSingleAction(`RE-ROLL (${cat.toUpperCase()}): ${pick.n}`);
+        }
+
+        function initiateLaunch() {
+            playSound();
+            const btn = document.getElementById('launchBtn');
+            btn.disabled = true;
+            const cats = ['physical', 'cognitive', 'language', 'social', 'creative'];
+            let picks = [];
+
+            cats.forEach((cat, idx) => {
+                const card = document.getElementById(cat);
+                card.classList.add('launching');
+
+                setTimeout(() => {
+                    card.classList.remove('launching');
+                    const options = db[cat];
+                    const pick = options[Math.floor(Math.random() * options.length)];
+                    card.querySelector('.activity-display').innerText = pick.n;
+                    card.querySelector('.activity-desc').innerText = pick.d;
+                    
+                    // Show the Change button after the first launch
+                    card.querySelector('.reroll-btn').style.visibility = 'visible';
+                    
+                    const tag = card.querySelector('.break-tag');
+                    if(tag) tag.remove();
+                    if(pick.i) {
+                        const newTag = document.createElement('div');
+                        newTag.className = 'break-tag'; newTag.innerText = '☕ BREAK';
+                        card.appendChild(newTag);
+                    }
+
+                    picks.push(pick.n);
+                    if(picks.length === 5) {
+                        btn.disabled = false;
+                        logMission(picks);
+                    }
+                }, 1000 + (idx * 300));
+            });
+        }
+
+        function getTimestamp() {
+            const now = new Date();
+            return now.toLocaleDateString([], {month:'numeric', day:'numeric'}) + ", " + 
+                   now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        }
+
+        function logMission(names) {
+            const log = document.getElementById('logContent');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.innerHTML = `<b>[${getTimestamp()}] LAUNCH LOG:</b> ${names.join(' → ')}`;
+            log.prepend(entry);
+        }
+
+        function logSingleAction(message) {
+            const log = document.getElementById('logContent');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.innerHTML = `<b>[${getTimestamp()}]</b> ${message}`;
+            log.prepend(entry);
+        }
+    </script>
+</body>
+</html>
